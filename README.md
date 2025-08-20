@@ -1,8 +1,3 @@
-Here’s a **starter `README.md`** for your project repo 👇 — it explains the project, workflow, tools, and how to get started. You can copy this directly into your repo.
-
----
-
-```markdown
 # 🛡️ AutoMLSecOps Linear Regression Pipeline
 
 ## 📌 Project Overview
@@ -50,7 +45,6 @@ This makes the ML system **self-improving, reproducible, and secure** 🔒.
 
 ## 📂 Repository Structure
 ```
-
 mlsecops-linear-regression/
 │── data/
 │   ├── raw/                # incoming datasets
@@ -69,17 +63,16 @@ mlsecops-linear-regression/
 │── monitoring/
 │   ├── prometheus.yaml     # Prometheus config
 │   ├── grafana.json        # Grafana dashboard
-│   └── drift\_monitor.py    # EvidentlyAI drift checks
+│   └── drift_monitor.py    # EvidentlyAI drift checks
 │
 │── .github/
 │   └── workflows/
-│       └── ci\_cd\_pipeline.yaml  # GitHub Actions workflow
+│       └── ci_cd_pipeline.yaml  # GitHub Actions workflow
 │
 │── Dockerfile
 │── requirements.txt
 │── README.md
-
-````
+```
 
 ---
 
@@ -89,29 +82,25 @@ mlsecops-linear-regression/
 ```bash
 git clone https://github.com/your-username/mlsecops-linear-regression.git
 cd mlsecops-linear-regression
-````
+```
 
 ### 2. Install dependencies
-
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3. Setup DVC
-
 ```bash
 dvc init
 dvc remote add -d storage <your-remote-storage>
 ```
 
 ### 4. Run training locally
-
 ```bash
 python src/train.py
 ```
 
 ### 5. Start FastAPI service
-
 ```bash
 uvicorn src.serve:app --reload
 ```
@@ -122,42 +111,41 @@ API available at: `http://127.0.0.1:8000/predict`
 
 ## 🔄 CI/CD Pipeline
 
-* On new data commit:
-
-  * Validate & version dataset (DVC).
-  * Retrain model.
-  * Log metrics & model (MLflow).
-  * Compare with previous model on frozen test set.
-  * If better → promote & deploy.
-  * If worse → rollback & alert.
+On new data commit:
+- Validate & version dataset (DVC).
+- Retrain model.
+- Log metrics & model (MLflow).
+- Compare with previous model on frozen test set.
+- If better → promote & deploy.
+- If worse → rollback & alert.
 
 ---
 
 ## 📊 Monitoring
 
-* **Prometheus** → Collects API metrics.
-* **Grafana** → Visualizes metrics.
-* **EvidentlyAI** → Detects data drift.
+- **Prometheus** → Collects API metrics.
+- **Grafana** → Visualizes metrics.
+- **EvidentlyAI** → Detects data drift.
 
 ---
 
 ## 🔒 Security
 
-* **Input validation** with Pydantic.
-* **JWT authentication** for API endpoints.
-* **HTTPS (TLS)** for secure communication.
-* **DVC + MLflow** for reproducibility.
-* **Automated rollback** on failure.
+- **Input validation** with Pydantic.
+- **JWT authentication** for API endpoints.
+- **HTTPS (TLS)** for secure communication.
+- **DVC + MLflow** for reproducibility.
+- **Automated rollback** on failure.
 
 ---
 
 ## 🌟 Roadmap
 
-* [ ] Add CI/CD (GitHub Actions)
-* [ ] Integrate Prometheus & Grafana
-* [ ] Add EvidentlyAI for drift detection
-* [ ] Add JWT & HTTPS security
-* [ ] Deploy on Kubernetes
+- [ ] Add CI/CD (GitHub Actions)
+- [ ] Integrate Prometheus & Grafana
+- [ ] Add EvidentlyAI for drift detection
+- [ ] Add JWT & HTTPS security
+- [ ] Deploy on Kubernetes
 
 ---
 
@@ -170,11 +158,3 @@ PRs are welcome! Fork this repo and create a new branch for contributions.
 ## 📜 License
 
 MIT License © 2025 Aanish
-
-```
-
----
-
-⚡ This `README.md` makes your repo look **professional and resume-ready**.  
-Do you want me to also prepare a **requirements.txt** (all Python dependencies) so you can commit that right after README?
-```
