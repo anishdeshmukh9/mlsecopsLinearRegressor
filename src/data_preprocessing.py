@@ -21,8 +21,9 @@ logger = logging.getLogger(__name__)
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 class DataPreprocessing:
-    def __init__(self, 
+    def __init__(self,
                  raw_data_path: str = os.path.join(ROOT_DIR, "data", "raw.csv"),
                  processed_dir: str = os.path.join(ROOT_DIR, "data", "processed"),
                  params_path: str = os.path.join(ROOT_DIR, "params.yaml")):
@@ -34,7 +35,6 @@ class DataPreprocessing:
         # Load params
         with open(self.params_path, "r") as f:
             self.params = yaml.safe_load(f)
-
 
         self.test_size = self.params["split"]["test_size"]
         self.random_state = self.params["split"]["random_state"]
@@ -101,31 +101,40 @@ class DataPreprocessing:
             logger.info("Fitting and transforming data...")
             X_processed = preprocessor.fit_transform(X)
 
+            # Convert back to DataFrame
+            X_cols = numeric_features + list(
+                preprocessor.named_transformers_["cat"].get_feature_names_out(categorical_features)
+            )
+            X_df = pd.DataFrame(X_processed, columns=X_cols)
+            y_df = pd.DataFrame(y, columns=["charges"])
+
             # Save preprocessor
             joblib.dump(preprocessor, os.path.join(self.processed_dir, "preprocessor.pkl"))
             logger.info("Preprocessor object saved.")
 
-            return X_processed, y
+            return X_df, y_df
 
         except Exception as e:
             logger.error(f"Error during preprocessing: {e}")
             raise
 
-    def split_and_save(self, X: np.ndarray, y: np.ndarray):
-        """Split train/test sets and save them"""
+    def split_and_save(self, X: pd.DataFrame, y: pd.DataFrame):
+        """Split train/test sets and save them as CSV"""
         try:
             logger.info(f"Splitting data with test_size={self.test_size}, random_state={self.random_state}")
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, test_size=self.test_size, random_state=self.random_state
             )
 
-            # Save to files
-            np.save(os.path.join(self.processed_dir, "X_train.npy"), X_train)
-            np.save(os.path.join(self.processed_dir, "X_test.npy"), X_test)
-            np.save(os.path.join(self.processed_dir, "y_train.npy"), y_train)
-            np.save(os.path.join(self.processed_dir, "y_test.npy"), y_test)
+            # Concatenate features + target for saving
+            train_df = pd.concat([X_train, y_train], axis=1)
+            test_df = pd.concat([X_test, y_test], axis=1)
 
-            logger.info(f"Train and test datasets saved in {self.processed_dir}")
+            # Save as CSV
+            train_df.to_csv(os.path.join(self.processed_dir, "train.csv"), index=False)
+            test_df.to_csv(os.path.join(self.processed_dir, "test.csv"), index=False)
+
+            logger.info(f"Train and test datasets saved as CSV in {self.processed_dir}")
 
         except Exception as e:
             logger.error(f"Error during train-test split saving: {e}")
@@ -133,8 +142,7 @@ class DataPreprocessing:
 
 
 if __name__ == "__main__":
-    processor = DataPreprocessing(
-    )
+    processor = DataPreprocessing()
     df = processor.load_data()
     X, y = processor.preprocess(df)
     processor.split_and_save(X, y)

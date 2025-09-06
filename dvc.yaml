@@ -13,8 +13,41 @@ stages:
       - data/raw.csv
       - params.yaml
     outs:
-      - data/processed/X_train.npy
-      - data/processed/X_test.npy
-      - data/processed/y_train.npy
-      - data/processed/y_test.npy
+      - data/processed/train.csv
+      - data/processed/test.csv
       - data/processed/preprocessor.pkl
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+      - src/feature_engineering.py
+      - data/processed/train.csv
+      - params.yaml
+    outs:
+      - data/processed/pca_model.pkl
+      - data/processed/feature_eng_results.yaml
+      - data/processed/correlation_heatmap.png
+
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+      - src/model_training.py
+      - data/processed/train.csv
+      - data/processed/test.csv
+      - params.yaml
+    outs:
+      - models/linear_regression.pkl
+      - models/elasticnet.pkl
+      - models/random_forest.pkl
+      - reports/metrics.yaml
+
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+      - src/model_evaluation.py
+      - models/linear_regression.pkl
+      - models/elasticnet.pkl
+      - models/random_forest.pkl
+      - data/processed/test.csv
+    outs:
+      - reports/final_evaluation.yaml
+
