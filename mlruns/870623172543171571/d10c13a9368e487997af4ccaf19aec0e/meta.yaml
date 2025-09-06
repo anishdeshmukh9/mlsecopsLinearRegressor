@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/870623172543171571/d10c13a9368e487997af4ccaf19aec0e/artifacts
+end_time: 1757165008141
+entry_point_name: ''
+experiment_id: '870623172543171571'
+lifecycle_stage: active
+run_id: d10c13a9368e487997af4ccaf19aec0e
+run_name: ElasticNet
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757165000177
+status: 3
+tags: []
+user_id: anish

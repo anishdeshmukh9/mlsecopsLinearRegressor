@@ -1,0 +1,6 @@
+artifact_location: mlflow-artifacts:/870623172543171571
+creation_time: 1757164990369
+experiment_id: '870623172543171571'
+last_update_time: 1757164990369
+lifecycle_stage: active
+name: LinearRegressorExperiment
