@@ -10,5 +10,21 @@ elasticnet:
   l1_ratio: 0.5
 
 random_forest:
-  n_estimators: 100
+  n_estimators: 200
+  max_depth: 10
+
+xgboost:
+  n_estimators: 300
+  max_depth: 6
+  learning_rate: 0.1
+
+
+xgboost:
+  n_estimators: [200, 500, 800]
+  max_depth: [4, 6, 8]
+  learning_rate: [0.01, 0.05, 0.1]
+  subsample: [0.8, 1.0]
+  colsample_bytree: [0.8, 1.0]
+  reg_alpha: [0, 0.1]
+  reg_lambda: [1, 1.5]
 

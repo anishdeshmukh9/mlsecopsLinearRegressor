@@ -1,115 +1,85 @@
 import pandas as pd
 import numpy as np
 import yaml
-import joblib
 import mlflow
 import mlflow.sklearn
-from sklearn.linear_model import ElasticNet, LinearRegression
-from sklearn.ensemble import RandomForestRegressor
+import mlflow.xgboost
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-import os
+from sklearn.ensemble import RandomForestRegressor
+import xgboost as xgb
+from itertools import product
 
-# Set MLflow tracking URI (local)
+# Load data
+df = pd.read_csv("data/processed/train.csv")
+X = df.drop("charges", axis=1)
+y = df["charges"]
+
+# Split (you already have processed train/test, but for tuning CV is better)
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+
 mlflow.set_tracking_uri("http://localhost:5000")
-mlflow.set_experiment("LinearRegressorExperiment")
+mlflow.set_experiment("Hyperparam_Tuning")
 
+def evaluate(y_true, y_pred):
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+    mae = mean_absolute_error(y_true, y_pred)
+    mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    r2 = r2_score(y_true, y_pred)
+    accuracy = 1 - (rmse / np.mean(y_true))
+    return {"R2": r2, "RMSE": rmse, "MAE": mae, "MAPE": mape, "Accuracy": accuracy}
 
-class ModelTraining:
-    def __init__(self, train_path, test_path, params_path):
-        self.train_path = train_path
-        self.test_path = test_path
-        self.params_path = params_path
+# --- RandomForest search ---
+rf_param_grid = {
+    "n_estimators": [100, 300, 500],
+    "max_depth": [None, 10, 20],
+    "min_samples_split": [2, 5]
+}
 
-        with open(self.params_path, "r") as f:
-            self.params = yaml.safe_load(f)
+for n, d, s in product(rf_param_grid["n_estimators"], rf_param_grid["max_depth"], rf_param_grid["min_samples_split"]):
+    with mlflow.start_run(run_name=f"RandomForest_n{n}_d{d}_s{s}"):
+        rf = RandomForestRegressor(
+            n_estimators=n, max_depth=d, min_samples_split=s, random_state=42
+        )
+        rf.fit(X_train, y_train)
+        preds = rf.predict(X_val)
 
-    def load_data(self):
-        train_df = pd.read_csv(self.train_path)
-        test_df = pd.read_csv(self.test_path)
+        metrics = evaluate(y_val, preds)
+        mlflow.log_params({"n_estimators": n, "max_depth": d, "min_samples_split": s})
+        mlflow.log_metrics(metrics)
+        mlflow.sklearn.log_model(rf, artifact_path="RandomForest")
 
-        X_train = train_df.drop("charges", axis=1)
-        y_train = train_df["charges"]
-        X_test = test_df.drop("charges", axis=1)
-        y_test = test_df["charges"]
+# --- XGBoost search ---
+xgb_param_grid = {
+    "n_estimators": [200, 500],
+    "max_depth": [4, 6, 8],
+    "learning_rate": [0.05, 0.1],
+    "subsample": [0.8, 1.0]
+}
 
-        return X_train, X_test, y_train, y_test
+for n, d, lr, sub in product(
+    xgb_param_grid["n_estimators"],
+    xgb_param_grid["max_depth"],
+    xgb_param_grid["learning_rate"],
+    xgb_param_grid["subsample"]
+):
+    with mlflow.start_run(run_name=f"XGBoost_n{n}_d{d}_lr{lr}_sub{sub}"):
+        xgbr = xgb.XGBRegressor(
+            n_estimators=n,
+            max_depth=d,
+            learning_rate=lr,
+            subsample=sub,
+            random_state=42,
+            n_jobs=-1
+        )
+        xgbr.fit(X_train, y_train)
+        preds = xgbr.predict(X_val)
 
-    def evaluate(self, y_true, y_pred):
-        r2 = r2_score(y_true, y_pred)
-        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-        mae = mean_absolute_error(y_true, y_pred)
-        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
-        accuracy = 1 - (rmse / np.mean(y_true))
+        metrics = evaluate(y_val, preds)
+        mlflow.log_params({
+            "n_estimators": n, "max_depth": d, "learning_rate": lr, "subsample": sub
+        })
+        mlflow.log_metrics(metrics)
+        mlflow.xgboost.log_model(xgbr, artifact_path="XGBoost")
 
-        # Ensure metric names are MLflow-safe (no trailing spaces)
-        return {
-            "R2": float(r2),
-            "RMSE": float(rmse),
-            "MAE": float(mae),
-            "MAPE": float(mape),
-            "Accuracy": float(accuracy)
-        }
-
-    def run(self):
-        X_train, X_test, y_train, y_test = self.load_data()
-        results = {}
-
-        # --- Linear Regression ---
-        with mlflow.start_run(run_name="LinearRegression"):
-            lr = LinearRegression()
-            lr.fit(X_train, y_train)
-            preds = lr.predict(X_test)
-
-            metrics = self.evaluate(y_test, preds)
-            results["LinearRegression"] = metrics
-            joblib.dump(lr, "models/linear_regression.pkl")
-
-            mlflow.log_params({})  # no hyperparams
-            mlflow.log_metrics(metrics)
-            mlflow.sklearn.log_model(lr, artifact_path="LinearRegression")
-
-        # --- ElasticNet ---
-        en_params = self.params.get("elasticnet", {"alpha": 0.1, "l1_ratio": 0.5})
-        with mlflow.start_run(run_name="ElasticNet"):
-            en = ElasticNet(alpha=en_params["alpha"], l1_ratio=en_params["l1_ratio"], random_state=42)
-            en.fit(X_train, y_train)
-            preds = en.predict(X_test)
-
-            metrics = self.evaluate(y_test, preds)
-            results["ElasticNet"] = metrics
-            joblib.dump(en, "models/elasticnet.pkl")
-
-            mlflow.log_params(en_params)
-            mlflow.log_metrics(metrics)
-            mlflow.sklearn.log_model(en, artifact_path="ElasticNet")
-
-        # --- Random Forest ---
-        rf_params = self.params.get("random_forest", {"n_estimators": 100})
-        with mlflow.start_run(run_name="RandomForest"):
-            rf = RandomForestRegressor(n_estimators=rf_params["n_estimators"], random_state=42)
-            rf.fit(X_train, y_train)
-            preds = rf.predict(X_test)
-
-            metrics = self.evaluate(y_test, preds)
-            results["RandomForest"] = metrics
-            joblib.dump(rf, "models/random_forest.pkl")
-
-            mlflow.log_params(rf_params)
-            mlflow.log_metrics(metrics)
-            mlflow.sklearn.log_model(rf, artifact_path="RandomForest")
-
-        # --- Save metrics for DVC ---
-        os.makedirs("reports", exist_ok=True)
-        with open("reports/metrics.yaml", "w") as f:
-            yaml.dump(results, f)
-
-        print("✅ Training complete. Metrics saved to reports/metrics.yaml and logged to MLflow")
-
-
-if __name__ == "__main__":
-    trainer = ModelTraining(
-        train_path="data/processed/train.csv",
-        test_path="data/processed/test.csv",
-        params_path="params.yaml"
-    )
-    trainer.run()
+print("✅ Hyperparameter tuning complete. Check MLflow UI for comparisons.")

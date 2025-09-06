@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/743884463867088641/8377cb82c3ae4d78965cca651e8bf39e/artifacts
+end_time: 1757179859561
+entry_point_name: ''
+experiment_id: '743884463867088641'
+lifecycle_stage: active
+run_id: 8377cb82c3ae4d78965cca651e8bf39e
+run_name: XGBoost
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757179833975
+status: 3
+tags: []
+user_id: anish

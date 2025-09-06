@@ -1,83 +1,107 @@
-import os
-import logging
 import pandas as pd
 import numpy as np
-import joblib
 import yaml
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+import joblib
+import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import xgboost as xgb
+import os
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("model_evaluation.log"), logging.StreamHandler()],
-)
-logger = logging.getLogger(__name__)
+# Set MLflow tracking URI
+mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_experiment("InsuranceChargesExperiment")
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+class ModelTraining:
+    def __init__(self, train_path, test_path, params_path):
+        self.train_path = train_path
+        self.test_path = test_path
+        self.params_path = params_path
 
-class ModelEvaluation:
-    def __init__(self, 
-                 models_dir=os.path.join(ROOT_DIR, "models"),
-                 processed_dir=os.path.join(ROOT_DIR, "data", "processed"),
-                 reports_dir=os.path.join(ROOT_DIR, "reports")):
-        self.models_dir = models_dir
-        self.processed_dir = processed_dir
-        self.reports_dir = reports_dir
-        os.makedirs(self.reports_dir, exist_ok=True)
+        with open(self.params_path, "r") as f:
+            self.params = yaml.safe_load(f)
 
     def load_data(self):
-        """Load test dataset"""
-        test_df = pd.read_csv(os.path.join(self.processed_dir, "test.csv"))
-        X_test = test_df.drop("charges", axis=1)
-        y_test = test_df["charges"].values
-        return X_test, y_test
+        train_df = pd.read_csv(self.train_path)
+        test_df = pd.read_csv(self.test_path)
 
-    def load_models(self):
-        """Load all trained models"""
-        models = {}
-        for name in ["linear_regression.pkl", "elasticnet.pkl", "random_forest.pkl"]:
-            path = os.path.join(self.models_dir, name)
-            if os.path.exists(path):
-                models[name.split(".")[0]] = joblib.load(path)
-                logger.info(f"Loaded model: {name}")
-            else:
-                logger.warning(f"Model not found: {name}")
-        return models
+        X_train = train_df.drop("charges", axis=1)
+        y_train = train_df["charges"]
+        X_test = test_df.drop("charges", axis=1)
+        y_test = test_df["charges"]
+
+        return X_train, X_test, y_train, y_test
 
     def evaluate(self, y_true, y_pred):
-        """Compute evaluation metrics"""
-        r2 = float(r2_score(y_true, y_pred))
-        rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
-        mae = float(mean_absolute_error(y_true, y_pred))
-        mape = float(np.mean(np.abs((y_true - y_pred) / y_true)) * 100)
-        accuracy = float(1 - (rmse / np.mean(y_true)))  # relative accuracy
+        r2 = r2_score(y_true, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+        mae = mean_absolute_error(y_true, y_pred)
+        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+        accuracy = 1 - (rmse / np.mean(y_true))
 
         return {
-            "R2": round(r2, 4),
-            "RMSE": round(rmse, 4),
-            "MAE": round(mae, 4),
-            "MAPE (%)": round(mape, 2),
-            "Accuracy": round(accuracy, 4),
+            "R2": float(r2),
+            "RMSE": float(rmse),
+            "MAE": float(mae),
+            "MAPE": float(mape),
+            "Accuracy": float(accuracy)
         }
 
     def run(self):
-        X_test, y_test = self.load_data()
-        models = self.load_models()
+        X_train, X_test, y_train, y_test = self.load_data()
+        results = {}
 
-        final_results = {}
-        for name, model in models.items():
-            logger.info(f"Evaluating {name}...")
-            y_pred = model.predict(X_test)
-            final_results[name] = self.evaluate(y_test, y_pred)
+        # --- Random Forest ---
+        rf_params = self.params.get("random_forest", {"n_estimators": 200, "max_depth": 10})
+        with mlflow.start_run(run_name="RandomForest"):
+            rf = RandomForestRegressor(
+                n_estimators=rf_params["n_estimators"],
+                max_depth=rf_params.get("max_depth", None),
+                random_state=42
+            )
+            rf.fit(X_train, y_train)
+            preds = rf.predict(X_test)
 
-        # Save results to YAML
-        report_path = os.path.join(self.reports_dir, "final_evaluation.yaml")
-        with open(report_path, "w") as f:
-            yaml.dump(final_results, f)
+            metrics = self.evaluate(y_test, preds)
+            results["RandomForest"] = metrics
+            joblib.dump(rf, "models/random_forest.pkl")
 
-        logger.info(f"Evaluation report saved to {report_path}")
+            mlflow.log_params(rf_params)
+            mlflow.log_metrics(metrics)
+            mlflow.sklearn.log_model(rf, artifact_path="RandomForest")
 
+        # --- XGBoost ---
+        xgb_params = self.params.get("xgboost", {"n_estimators": 300, "max_depth": 6, "learning_rate": 0.1})
+        with mlflow.start_run(run_name="XGBoost"):
+            xgbr = xgb.XGBRegressor(
+                n_estimators=xgb_params["n_estimators"],
+                max_depth=xgb_params["max_depth"],
+                learning_rate=xgb_params["learning_rate"],
+                random_state=42
+            )
+            xgbr.fit(X_train, y_train)
+            preds = xgbr.predict(X_test)
+
+            metrics = self.evaluate(y_test, preds)
+            results["XGBoost"] = metrics
+            joblib.dump(xgbr, "models/xgboost.pkl")
+
+            mlflow.log_params(xgb_params)
+            mlflow.log_metrics(metrics)
+            mlflow.sklearn.log_model(xgbr, artifact_path="XGBoost")
+
+        # --- Save metrics for DVC ---
+        os.makedirs("reports", exist_ok=True)
+        with open("reports/metrics.yaml", "w") as f:
+            yaml.dump(results, f)
+
+        print("✅ Training complete. Metrics saved & logged to MLflow")
 
 if __name__ == "__main__":
-    evaluator = ModelEvaluation()
-    evaluator.run()
+    trainer = ModelTraining(
+        train_path="data/processed/train.csv",
+        test_path="data/processed/test.csv",
+        params_path="params.yaml"
+    )
+    trainer.run()

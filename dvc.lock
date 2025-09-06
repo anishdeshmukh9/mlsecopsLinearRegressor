@@ -21,8 +21,8 @@ stages:
       size: 55690
     - path: params.yaml
       hash: md5
-      md5: 2a6662a469da7fdaf631af829542e33a
-      size: 170
+      md5: 329449a95dadb15e6e76855513b4b915
+      size: 258
     - path: src/data_preprocessing.py
       hash: md5
       md5: 3688b98c72ee4cf0f46b77246f94289e
@@ -49,8 +49,8 @@ stages:
       size: 81783
     - path: params.yaml
       hash: md5
-      md5: 2a6662a469da7fdaf631af829542e33a
-      size: 170
+      md5: 329449a95dadb15e6e76855513b4b915
+      size: 258
     - path: src/feature_engineering.py
       hash: md5
       md5: e1533b7c6cb085eb88b2928176da3903
@@ -81,29 +81,21 @@ stages:
       size: 81783
     - path: params.yaml
       hash: md5
-      md5: 2a6662a469da7fdaf631af829542e33a
-      size: 170
+      md5: 329449a95dadb15e6e76855513b4b915
+      size: 258
     - path: src/model_training.py
       hash: md5
-      md5: 7d0b6fb184abb823a04195f7971fe1ae
-      size: 4155
+      md5: d2d8c121f662793b8a80c8eed9521c5f
+      size: 2846
     outs:
-    - path: models/elasticnet.pkl
-      hash: md5
-      md5: 36b700cf7bb844c46808269376977b51
-      size: 1064
-    - path: models/linear_regression.pkl
-      hash: md5
-      md5: 97e0c2b9e3318071c8902db84675e808
-      size: 1049
     - path: models/random_forest.pkl
       hash: md5
-      md5: 8f24c66a71a5d05ed59ca19553a9f034
-      size: 7588241
+      md5: 8752cbdb7f83309f04539acf2c95386e
+      size: 15212993
     - path: reports/metrics.yaml
       hash: md5
-      md5: 7ef0d7399929302d9b4783b1cda93e98
-      size: 466
+      md5: c77ad76a463d238f6dbf155e3634669e
+      size: 157
   model_evaluation:
     cmd: python src/model_evaluation.py
     deps:

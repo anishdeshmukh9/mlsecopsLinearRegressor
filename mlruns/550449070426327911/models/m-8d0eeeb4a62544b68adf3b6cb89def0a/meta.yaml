@@ -1,0 +1,10 @@
+artifact_location: mlflow-artifacts:/550449070426327911/models/m-8d0eeeb4a62544b68adf3b6cb89def0a/artifacts
+creation_timestamp: 1757181566781
+experiment_id: '550449070426327911'
+last_updated_timestamp: 1757181574509
+model_id: m-8d0eeeb4a62544b68adf3b6cb89def0a
+model_type: ''
+name: XGBoost_GPU
+source_run_id: cfbaa9ce732b458891db7401106f2599
+status: 2
+status_message: null
