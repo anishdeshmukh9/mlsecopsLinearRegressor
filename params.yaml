@@ -10,4 +10,5 @@ elasticnet:
   l1_ratio: 0.5
 
 random_forest:
-  n_estimators: 1000
+  n_estimators: 100
+

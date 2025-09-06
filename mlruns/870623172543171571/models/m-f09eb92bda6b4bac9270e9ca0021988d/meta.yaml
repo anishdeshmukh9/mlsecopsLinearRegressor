@@ -1,0 +1,10 @@
+artifact_location: mlflow-artifacts:/870623172543171571/models/m-f09eb92bda6b4bac9270e9ca0021988d/artifacts
+creation_timestamp: 1757177484656
+experiment_id: '870623172543171571'
+last_updated_timestamp: 1757177501799
+model_id: m-f09eb92bda6b4bac9270e9ca0021988d
+model_type: ''
+name: ElasticNet
+source_run_id: 2a57f4bd5f0043098ceda9b6a75dcaad
+status: 2
+status_message: null
