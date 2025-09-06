@@ -1,0 +1,15 @@
+2025-09-06 15:01:06,386 - INFO - Fetching data from https://gist.githubusercontent.com/meperezcuello/82a9f1c1c473d6585e750ad2e3c05a41/raw/d42d226d0dd64e7f5395a0eec1b9190a10edbc03/Medical_Cost.csv
+2025-09-06 15:01:07,676 - INFO - Data fetched successfully with shape (1338, 7)
+2025-09-06 15:01:07,706 - INFO - Data saved to ../data\raw.csv
+2025-09-06 15:03:05,643 - INFO - Fetching data from https://gist.githubusercontent.com/meperezcuello/82a9f1c1c473d6585e750ad2e3c05a41/raw/d42d226d0dd64e7f5395a0eec1b9190a10edbc03/Medical_Cost.csv
+2025-09-06 15:03:06,636 - INFO - Data fetched successfully with shape (1338, 7)
+2025-09-06 15:03:06,660 - INFO - Data saved to ../data\raw.csv
+2025-09-06 15:04:31,672 - INFO - Fetching data from https://gist.githubusercontent.com/meperezcuello/82a9f1c1c473d6585e750ad2e3c05a41/raw/d42d226d0dd64e7f5395a0eec1b9190a10edbc03/Medical_Cost.csv
+2025-09-06 15:04:32,658 - INFO - Data fetched successfully with shape (1338, 7)
+2025-09-06 15:04:32,675 - INFO - Data saved to ../data\raw.csv
+2025-09-06 15:05:50,482 - INFO - Fetching data from https://gist.githubusercontent.com/meperezcuello/82a9f1c1c473d6585e750ad2e3c05a41/raw/d42d226d0dd64e7f5395a0eec1b9190a10edbc03/Medical_Cost.csv
+2025-09-06 15:05:51,403 - INFO - Data fetched successfully with shape (1338, 7)
+2025-09-06 15:05:51,419 - INFO - Data saved to ../data\raw.csv
+2025-09-06 15:07:39,702 - INFO - Fetching data from https://gist.githubusercontent.com/meperezcuello/82a9f1c1c473d6585e750ad2e3c05a41/raw/d42d226d0dd64e7f5395a0eec1b9190a10edbc03/Medical_Cost.csv
+2025-09-06 15:07:41,489 - INFO - Data fetched successfully with shape (1338, 7)
+2025-09-06 15:07:41,510 - INFO - Data saved to H:\2026-prep\mlsecopsLinearRegressor\data\raw.csv

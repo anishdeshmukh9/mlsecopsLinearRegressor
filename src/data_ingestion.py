@@ -2,8 +2,11 @@ import os
 import logging
 import pandas as pd
 import requests
+from io import StringIO
 
-
+# -------------------------
+# Setup logger
+# -------------------------
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -15,11 +18,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 class DataIngestion:
-    def __init__(self, url: str, data_dir: str = "../data", filename: str = "raw.csv"):
+    def __init__(self, url: str, data_dir: str = os.path.join(ROOT_DIR, "data"), filename: str = "raw.csv"):
         self.url = url
         self.data_dir = data_dir
         self.filepath = os.path.join(data_dir, filename)
+
 
     def fetch_data(self) -> pd.DataFrame:
         """
@@ -28,8 +34,7 @@ class DataIngestion:
         try:
             logger.info(f"Fetching data from {self.url}")
             response = requests.get(self.url)
-            response.raise_for_status()  # raise error if request fails
-            from io import StringIO
+            response.raise_for_status()
             df = pd.read_csv(StringIO(response.text))
             logger.info(f"Data fetched successfully with shape {df.shape}")
             return df
@@ -42,7 +47,7 @@ class DataIngestion:
         Save dataframe as CSV in the /data directory.
         """
         try:
-            os.makedirs(self.data_dir, exist_ok=True)
+            os.makedirs(self.data_dir, exist_ok=True)  # ensure folder exists
             df.to_csv(self.filepath, index=False)
             logger.info(f"Data saved to {self.filepath}")
         except Exception as e:
@@ -51,8 +56,12 @@ class DataIngestion:
 
 
 if __name__ == "__main__":
-    DATA_URL = "https://gist.githubusercontent.com/meperezcuello/82a9f1c1c473d6585e750ad2e3c05a41/raw/d42d226d0dd64e7f5395a0eec1b9190a10edbc03/Medical_Cost.csv"
+    DATA_URL = (
+        "https://gist.githubusercontent.com/meperezcuello/"
+        "82a9f1c1c473d6585e750ad2e3c05a41/raw/"
+        "d42d226d0dd64e7f5395a0eec1b9190a10edbc03/Medical_Cost.csv"
+    )
 
-    ingestion = DataIngestion(url=DATA_URL, data_dir="../data", filename="raw.csv")
+    ingestion = DataIngestion(url=DATA_URL)
     df = ingestion.fetch_data()
     ingestion.save_data(df)

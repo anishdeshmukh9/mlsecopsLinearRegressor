@@ -1,0 +1,22 @@
+2025-09-06 15:15:54,305 - INFO - Loading raw data from ../data/raw.csv
+2025-09-06 15:15:54,363 - INFO - Data loaded with shape (1338, 7)
+2025-09-06 15:15:54,368 - INFO - No missing values found.
+2025-09-06 15:15:54,393 - INFO - Outlier removal for age: 0 rows removed
+2025-09-06 15:15:54,420 - INFO - Outlier removal for bmi: 9 rows removed
+2025-09-06 15:15:54,427 - INFO - Outlier removal for children: 0 rows removed
+2025-09-06 15:15:54,439 - INFO - Outlier removal for charges: 138 rows removed
+2025-09-06 15:15:54,454 - INFO - Fitting and transforming data...
+2025-09-06 15:15:54,500 - INFO - Preprocessor object saved.
+2025-09-06 15:15:54,502 - INFO - Splitting data with test_size=0.2, random_state=42
+2025-09-06 15:15:54,519 - INFO - Train and test datasets saved in ../data/processed
+2025-09-06 15:16:53,286 - INFO - Loading raw data from H:\2026-prep\mlsecopsLinearRegressor\data\raw.csv
+2025-09-06 15:16:53,310 - INFO - Data loaded with shape (1338, 7)
+2025-09-06 15:16:53,311 - INFO - No missing values found.
+2025-09-06 15:16:53,315 - INFO - Outlier removal for age: 0 rows removed
+2025-09-06 15:16:53,318 - INFO - Outlier removal for bmi: 9 rows removed
+2025-09-06 15:16:53,321 - INFO - Outlier removal for children: 0 rows removed
+2025-09-06 15:16:53,323 - INFO - Outlier removal for charges: 138 rows removed
+2025-09-06 15:16:53,325 - INFO - Fitting and transforming data...
+2025-09-06 15:16:53,339 - INFO - Preprocessor object saved.
+2025-09-06 15:16:53,340 - INFO - Splitting data with test_size=0.2, random_state=42
+2025-09-06 15:16:53,347 - INFO - Train and test datasets saved in H:\2026-prep\mlsecopsLinearRegressor\data\processed

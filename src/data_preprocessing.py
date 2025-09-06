@@ -19,11 +19,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class DataPreprocessing:
-    def __init__(self, raw_data_path: str = "../data/raw.csv",
-                 processed_dir: str = "../data/processed",
-                 params_path: str = "../params.yaml"):
+    def __init__(self, 
+                 raw_data_path: str = os.path.join(ROOT_DIR, "data", "raw.csv"),
+                 processed_dir: str = os.path.join(ROOT_DIR, "data", "processed"),
+                 params_path: str = os.path.join(ROOT_DIR, "params.yaml")):
         self.raw_data_path = raw_data_path
         self.processed_dir = processed_dir
         self.params_path = params_path
@@ -32,6 +34,7 @@ class DataPreprocessing:
         # Load params
         with open(self.params_path, "r") as f:
             self.params = yaml.safe_load(f)
+
 
         self.test_size = self.params["split"]["test_size"]
         self.random_state = self.params["split"]["random_state"]
@@ -43,11 +46,47 @@ class DataPreprocessing:
         logger.info(f"Data loaded with shape {df.shape}")
         return df
 
+    def handle_missing(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Handle missing values"""
+        if df.isnull().sum().sum() > 0:
+            logger.info("Handling missing values by imputing...")
+            for col in df.columns:
+                if df[col].dtype == "object":
+                    df[col] = df[col].fillna(df[col].mode()[0])
+                else:
+                    df[col] = df[col].fillna(df[col].median())
+        else:
+            logger.info("No missing values found.")
+        return df
+
+    def remove_outliers(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Remove outliers using IQR method for numeric features"""
+        numeric_cols = ["age", "bmi", "children", "charges"]
+        for col in numeric_cols:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            lower = Q1 - 1.5 * IQR
+            upper = Q3 + 1.5 * IQR
+            before = df.shape[0]
+            df = df[(df[col] >= lower) & (df[col] <= upper)]
+            after = df.shape[0]
+            logger.info(f"Outlier removal for {col}: {before - after} rows removed")
+        return df
+
     def preprocess(self, df: pd.DataFrame):
-        """Preprocess dataset: one-hot encode categoricals & scale numeric features"""
+        """Preprocess dataset: missing values, outliers, encoding, scaling"""
         try:
+            # Handle missing + outliers
+            df = self.handle_missing(df)
+            df = self.remove_outliers(df)
+
+            # Features and target
             X = df.drop("charges", axis=1)
             y = df["charges"].values
+
+            # Log transform target (helps regression performance)
+            y = np.log1p(y)
 
             categorical_features = ["sex", "smoker", "region"]
             numeric_features = ["age", "bmi", "children"]
@@ -95,9 +134,6 @@ class DataPreprocessing:
 
 if __name__ == "__main__":
     processor = DataPreprocessing(
-        raw_data_path="../data/raw.csv",
-        processed_dir="../data/processed",
-        params_path="../params.yaml"
     )
     df = processor.load_data()
     X, y = processor.preprocess(df)
