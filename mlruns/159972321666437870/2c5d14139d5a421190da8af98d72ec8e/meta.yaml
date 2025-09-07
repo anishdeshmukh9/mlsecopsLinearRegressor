@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/159972321666437870/2c5d14139d5a421190da8af98d72ec8e/artifacts
+end_time: 1757221398288
+entry_point_name: ''
+experiment_id: '159972321666437870'
+lifecycle_stage: active
+run_id: 2c5d14139d5a421190da8af98d72ec8e
+run_name: RandomForest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757221378542
+status: 3
+tags: []
+user_id: anish

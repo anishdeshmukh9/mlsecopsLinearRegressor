@@ -4,14 +4,13 @@ import yaml
 import joblib
 import mlflow
 import mlflow.sklearn
-from sklearn.linear_model import ElasticNet, LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import os
 
 # Set MLflow tracking URI (local)
 mlflow.set_tracking_uri("http://localhost:5000")
-mlflow.set_experiment("LinearRegressorExperiment")
+mlflow.set_experiment("RandomForestExperiment")
 
 
 class ModelTraining:
@@ -41,64 +40,49 @@ class ModelTraining:
         mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
         accuracy = 1 - (rmse / np.mean(y_true))
 
-        # Ensure metric names are MLflow-safe (no trailing spaces)
         return {
             "R2": float(r2),
             "RMSE": float(rmse),
             "MAE": float(mae),
             "MAPE": float(mape),
-            "Accuracy": float(accuracy)
+            "Accuracy": float(accuracy),
         }
 
     def run(self):
         X_train, X_test, y_train, y_test = self.load_data()
         results = {}
 
-        # --- Linear Regression ---
-        with mlflow.start_run(run_name="LinearRegression"):
-            lr = LinearRegression()
-            lr.fit(X_train, y_train)
-            preds = lr.predict(X_test)
-
-            metrics = self.evaluate(y_test, preds)
-            results["LinearRegression"] = metrics
-            joblib.dump(lr, "models/linear_regression.pkl")
-
-            mlflow.log_params({})  # no hyperparams
-            mlflow.log_metrics(metrics)
-            mlflow.sklearn.log_model(lr, artifact_path="LinearRegression")
-
-        # --- ElasticNet ---
-        en_params = self.params.get("elasticnet", {"alpha": 0.1, "l1_ratio": 0.5})
-        with mlflow.start_run(run_name="ElasticNet"):
-            en = ElasticNet(alpha=en_params["alpha"], l1_ratio=en_params["l1_ratio"], random_state=42)
-            en.fit(X_train, y_train)
-            preds = en.predict(X_test)
-
-            metrics = self.evaluate(y_test, preds)
-            results["ElasticNet"] = metrics
-            joblib.dump(en, "models/elasticnet.pkl")
-
-            mlflow.log_params(en_params)
-            mlflow.log_metrics(metrics)
-            mlflow.sklearn.log_model(en, artifact_path="ElasticNet")
-
-        # --- Random Forest ---
         rf_params = self.params.get("random_forest", {"n_estimators": 100})
-        with mlflow.start_run(run_name="RandomForest"):
-            rf = RandomForestRegressor(n_estimators=rf_params["n_estimators"], random_state=42)
+        with mlflow.start_run(run_name="RandomForest") as run:
+            rf = RandomForestRegressor(
+                n_estimators=rf_params.get("n_estimators", 100),
+                max_depth=rf_params.get("max_depth", None),
+                min_samples_split=rf_params.get("min_samples_split", 2),
+                random_state=42,
+                n_jobs=-1,
+            )
             rf.fit(X_train, y_train)
             preds = rf.predict(X_test)
 
+            # Evaluate
             metrics = self.evaluate(y_test, preds)
             results["RandomForest"] = metrics
+
+            # Save model locally
+            os.makedirs("models", exist_ok=True)
             joblib.dump(rf, "models/random_forest.pkl")
 
+            # Log params, metrics, and model
             mlflow.log_params(rf_params)
             mlflow.log_metrics(metrics)
-            mlflow.sklearn.log_model(rf, artifact_path="RandomForest")
 
-        # --- Save metrics for DVC ---
+            mlflow.sklearn.log_model(
+                sk_model=rf,
+                artifact_path="model",
+                registered_model_name="MedicalCostModel",  # registry name
+            )
+
+        # Save metrics for DVC
         os.makedirs("reports", exist_ok=True)
         with open("reports/metrics.yaml", "w") as f:
             yaml.dump(results, f)
@@ -110,6 +94,6 @@ if __name__ == "__main__":
     trainer = ModelTraining(
         train_path="data/processed/train.csv",
         test_path="data/processed/test.csv",
-        params_path="params.yaml"
+        params_path="params.yaml",
     )
     trainer.run()

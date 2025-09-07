@@ -35,8 +35,6 @@ stages:
       - data/processed/test.csv
       - params.yaml
     outs:
-      - models/linear_regression.pkl
-      - models/elasticnet.pkl
       - models/random_forest.pkl
       - reports/metrics.yaml
 
@@ -44,8 +42,6 @@ stages:
     cmd: python src/model_evaluation.py
     deps:
       - src/model_evaluation.py
-      - models/linear_regression.pkl
-      - models/elasticnet.pkl
       - models/random_forest.pkl
       - data/processed/test.csv
     outs:

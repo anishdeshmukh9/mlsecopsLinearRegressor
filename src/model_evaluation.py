@@ -6,6 +6,7 @@ import joblib
 import yaml
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
+# Logging setup
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -26,23 +27,21 @@ class ModelEvaluation:
         os.makedirs(self.reports_dir, exist_ok=True)
 
     def load_data(self):
-        """Load test dataset"""
+        """Load test dataset without interaction features"""
         test_df = pd.read_csv(os.path.join(self.processed_dir, "test.csv"))
         X_test = test_df.drop("charges", axis=1)
         y_test = test_df["charges"].values
         return X_test, y_test
 
-    def load_models(self):
-        """Load all trained models"""
-        models = {}
-        for name in ["linear_regression.pkl", "elasticnet.pkl", "random_forest.pkl"]:
-            path = os.path.join(self.models_dir, name)
-            if os.path.exists(path):
-                models[name.split(".")[0]] = joblib.load(path)
-                logger.info(f"Loaded model: {name}")
-            else:
-                logger.warning(f"Model not found: {name}")
-        return models
+    def load_model(self):
+        """Load only Random Forest model"""
+        path = os.path.join(self.models_dir, "random_forest.pkl")
+        if os.path.exists(path):
+            logger.info("Loaded model: random_forest.pkl")
+            return joblib.load(path)
+        else:
+            logger.error("Random Forest model not found!")
+            return None
 
     def evaluate(self, y_true, y_pred):
         """Compute evaluation metrics"""
@@ -62,20 +61,23 @@ class ModelEvaluation:
 
     def run(self):
         X_test, y_test = self.load_data()
-        models = self.load_models()
+        model = self.load_model()
+        if model is None:
+            logger.error("Evaluation aborted: no model found.")
+            return
 
-        final_results = {}
-        for name, model in models.items():
-            logger.info(f"Evaluating {name}...")
-            y_pred = model.predict(X_test)
-            final_results[name] = self.evaluate(y_test, y_pred)
+        logger.info("Evaluating Random Forest model...")
+        y_pred = model.predict(X_test)
+        metrics = self.evaluate(y_test, y_pred)
 
         # Save results to YAML
         report_path = os.path.join(self.reports_dir, "final_evaluation.yaml")
         with open(report_path, "w") as f:
-            yaml.dump(final_results, f)
+            yaml.dump({"random_forest": metrics}, f)
 
         logger.info(f"Evaluation report saved to {report_path}")
+        print("✅ Evaluation complete. Metrics saved to final_evaluation.yaml")
+        print(metrics)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/870623172543171571/c31f375f001340f4a797eadf422505da/artifacts
+end_time: 1757182406096
+entry_point_name: ''
+experiment_id: '870623172543171571'
+lifecycle_stage: active
+run_id: c31f375f001340f4a797eadf422505da
+run_name: LinearRegression
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1757182380585
+status: 3
+tags: []
+user_id: anish

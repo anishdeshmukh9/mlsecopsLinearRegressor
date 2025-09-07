@@ -20,8 +20,9 @@ logger = logging.getLogger(__name__)
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 class FeatureEngineering:
-    def __init__(self, 
+    def __init__(self,
                  processed_dir: str = os.path.join(ROOT_DIR, "data", "processed"),
                  params_path: str = os.path.join(ROOT_DIR, "params.yaml")):
         self.processed_dir = processed_dir
@@ -37,6 +38,10 @@ class FeatureEngineering:
         train_path = os.path.join(self.processed_dir, "train.csv")
         logger.info(f"Loading data from {train_path}")
         df = pd.read_csv(train_path)
+
+        # ensure charges is numeric
+        df["charges"] = pd.to_numeric(df["charges"], errors="coerce")
+
         logger.info(f"Loaded data with shape {df.shape}")
         return df
 
@@ -51,6 +56,7 @@ class FeatureEngineering:
         plt.title("Feature Correlation with Target")
         heatmap_path = os.path.join(self.processed_dir, "correlation_heatmap.png")
         plt.savefig(heatmap_path)
+        plt.close()
         logger.info(f"Correlation heatmap saved to {heatmap_path}")
 
         # Get top correlated features with 'charges'
@@ -70,11 +76,20 @@ class FeatureEngineering:
         explained_var = pca.explained_variance_ratio_
         logger.info(f"PCA explained variance ratios: {explained_var}")
 
-        # Save PCA results
+        # Save PCA model
         joblib.dump(pca, os.path.join(self.processed_dir, "pca_model.pkl"))
         logger.info("PCA model saved.")
 
         return explained_var
+
+    @staticmethod
+    def add_interactions(df: pd.DataFrame):
+        """Add custom interaction features"""
+        df["smoker_bmi"] = df["smoker_yes"] * df["bmi"]
+        df["smoker_age"] = df["smoker_yes"] * df["age"]
+        df["age_bmi"] = df["age"] * df["bmi"]
+        df["age_children"] = df["age"] * df["children"]
+        return df
 
     def run(self):
         df = self.load_data()
@@ -88,7 +103,8 @@ class FeatureEngineering:
         # Save results in YAML
         results = {
             "top_features": top_features,
-            "pca_explained_variance": explained_var.tolist()
+            "pca_explained_variance": explained_var.tolist(),
+            "pca_cumulative_variance": np.cumsum(explained_var).tolist()
         }
         results_path = os.path.join(self.processed_dir, "feature_eng_results.yaml")
         with open(results_path, "w") as f:
@@ -100,3 +116,18 @@ class FeatureEngineering:
 if __name__ == "__main__":
     fe = FeatureEngineering()
     fe.run()
+
+    # Load processed train/test
+    train = pd.read_csv("data/processed/train.csv")
+    test = pd.read_csv("data/processed/test.csv")
+
+    # Add interaction features
+    train = fe.add_interactions(train)
+    test = fe.add_interactions(test)
+
+    # Save back
+    os.makedirs("data/processed", exist_ok=True)
+    train.to_csv("data/processed/train_features.csv", index=False)
+    test.to_csv("data/processed/test_features.csv", index=False)
+
+    print("✅ Interaction features added and saved as train_features.csv, test_features.csv")

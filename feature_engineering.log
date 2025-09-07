@@ -86,3 +86,84 @@
 2025-09-06 21:28:42,697 - INFO - PCA explained variance ratios: [0.2973887  0.25132057 0.23105336]
 2025-09-06 21:28:42,702 - INFO - PCA model saved.
 2025-09-06 21:28:42,707 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-06 23:42:51,299 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-06 23:42:51,316 - INFO - Loaded data with shape (833, 9)
+2025-09-06 23:42:51,316 - INFO - Performing correlation analysis...
+2025-09-06 23:42:52,894 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-06 23:42:52,897 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-06 23:42:52,897 - INFO - Performing PCA analysis...
+2025-09-06 23:42:52,904 - INFO - PCA explained variance ratios: [0.2973887  0.25132057 0.23105336]
+2025-09-06 23:42:52,907 - INFO - PCA model saved.
+2025-09-06 23:42:52,910 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 09:54:53,671 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 09:54:53,712 - INFO - Loaded data with shape (833, 9)
+2025-09-07 09:54:53,713 - INFO - Performing correlation analysis...
+2025-09-07 09:54:56,642 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 09:54:56,655 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 09:54:56,656 - INFO - Performing PCA analysis...
+2025-09-07 09:54:56,687 - INFO - PCA explained variance ratios: [0.2973887  0.25132057 0.23105336 0.06356357 0.06112848]
+2025-09-07 09:54:56,694 - INFO - PCA model saved.
+2025-09-07 09:54:56,704 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 10:29:12,411 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 10:29:12,451 - INFO - Loaded data with shape (952, 9)
+2025-09-07 10:29:12,451 - INFO - Performing correlation analysis...
+2025-09-07 10:29:13,648 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 10:29:13,657 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 10:29:13,658 - INFO - Performing PCA analysis...
+2025-09-07 10:29:13,682 - INFO - PCA explained variance ratios: [0.293655   0.25746983 0.22642425 0.06396296 0.06089351]
+2025-09-07 10:29:13,688 - INFO - PCA model saved.
+2025-09-07 10:29:13,693 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 10:31:10,974 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 10:31:11,015 - INFO - Loaded data with shape (952, 9)
+2025-09-07 10:31:11,015 - INFO - Performing correlation analysis...
+2025-09-07 10:31:12,103 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 10:31:12,109 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 10:31:12,112 - INFO - Performing PCA analysis...
+2025-09-07 10:31:12,126 - INFO - PCA explained variance ratios: [0.293655   0.25746983 0.22642425 0.06396296 0.06089351]
+2025-09-07 10:31:12,133 - INFO - PCA model saved.
+2025-09-07 10:31:12,138 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 10:32:45,158 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 10:32:45,198 - INFO - Loaded data with shape (952, 9)
+2025-09-07 10:32:45,199 - INFO - Performing correlation analysis...
+2025-09-07 10:32:46,264 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 10:32:46,267 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 10:32:46,274 - INFO - Performing PCA analysis...
+2025-09-07 10:32:46,305 - INFO - PCA explained variance ratios: [0.293655   0.25746983 0.22642425 0.06396296 0.06089351]
+2025-09-07 10:32:46,310 - INFO - PCA model saved.
+2025-09-07 10:32:46,314 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 10:34:39,358 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 10:34:39,407 - INFO - Loaded data with shape (952, 9)
+2025-09-07 10:34:39,407 - INFO - Performing correlation analysis...
+2025-09-07 10:34:40,457 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 10:34:40,496 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 10:34:40,497 - INFO - Performing PCA analysis...
+2025-09-07 10:34:40,512 - INFO - PCA explained variance ratios: [0.293655   0.25746983 0.22642425 0.06396296 0.06089351]
+2025-09-07 10:34:40,520 - INFO - PCA model saved.
+2025-09-07 10:34:40,525 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 10:35:51,642 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 10:35:51,678 - INFO - Loaded data with shape (952, 9)
+2025-09-07 10:35:51,679 - INFO - Performing correlation analysis...
+2025-09-07 10:35:52,675 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 10:35:52,680 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 10:35:52,694 - INFO - Performing PCA analysis...
+2025-09-07 10:35:52,715 - INFO - PCA explained variance ratios: [0.293655   0.25746983 0.22642425 0.06396296 0.06089351]
+2025-09-07 10:35:52,721 - INFO - PCA model saved.
+2025-09-07 10:35:52,726 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 10:40:09,558 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 10:40:09,596 - INFO - Loaded data with shape (952, 9)
+2025-09-07 10:40:09,597 - INFO - Performing correlation analysis...
+2025-09-07 10:40:10,606 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 10:40:10,612 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 10:40:10,613 - INFO - Performing PCA analysis...
+2025-09-07 10:40:10,641 - INFO - PCA explained variance ratios: [0.293655   0.25746983 0.22642425 0.06396296 0.06089351]
+2025-09-07 10:40:10,650 - INFO - PCA model saved.
+2025-09-07 10:40:10,659 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
+2025-09-07 11:53:24,760 - INFO - Loading data from H:\2026-prep\mlsecopsLinearRegressor\data\processed\train.csv
+2025-09-07 11:53:24,805 - INFO - Loaded data with shape (952, 9)
+2025-09-07 11:53:24,806 - INFO - Performing correlation analysis...
+2025-09-07 11:53:27,650 - INFO - Correlation heatmap saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\correlation_heatmap.png
+2025-09-07 11:53:27,672 - INFO - Top correlated features with charges: ['age', 'smoker_yes', 'children', 'region_southeast', 'region_southwest']
+2025-09-07 11:53:27,673 - INFO - Performing PCA analysis...
+2025-09-07 11:53:27,699 - INFO - PCA explained variance ratios: [0.293655   0.25746983 0.22642425 0.06396296 0.06089351]
+2025-09-07 11:53:27,706 - INFO - PCA model saved.
+2025-09-07 11:53:27,711 - INFO - Feature engineering results saved to H:\2026-prep\mlsecopsLinearRegressor\data\processed\feature_eng_results.yaml
